@@ -1,5 +1,6 @@
 package io.github.rk012.taskboard
 
+import com.benasher44.uuid.uuid4
 import io.github.rk012.taskboard.exceptions.NoSuchLabelException
 import io.github.rk012.taskboard.items.Goal
 import io.github.rk012.taskboard.items.Task
@@ -12,7 +13,6 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.util.UUID
 import kotlin.reflect.KClass
 
 class Taskboard(var name: String) {
@@ -67,7 +67,7 @@ class Taskboard(var name: String) {
         name: String,
         time: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     ): Task {
-        var id = UUID.randomUUID().toString().split('-').joinToString("")
+        var id = uuid4().toString().split('-').joinToString("")
 
         if (!taskObjects.containsKey(id.substring(0..7))) {
             id = id.substring(0..7)
@@ -82,7 +82,7 @@ class Taskboard(var name: String) {
         name: String,
         time: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     ): Goal {
-        var id = UUID.randomUUID().toString().split('-').joinToString("")
+        var id = uuid4().toString().split('-').joinToString("")
 
         if (!taskObjects.containsKey(id.substring(0..7))) {
             id = id.substring(0..7)

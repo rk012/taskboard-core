@@ -4,11 +4,7 @@ import io.github.rk012.taskboard.TaskStatus
 import io.github.rk012.taskboard.Taskboard
 import io.github.rk012.taskboard.exceptions.*
 import io.github.rk012.taskboard.serialization.SerializableTaskObject
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.BeforeEach
+import kotlin.test.*
 
 class TaskObjectTest {
     private lateinit var taskboard: Taskboard
@@ -36,7 +32,7 @@ class TaskObjectTest {
         t2.addDependency(t1)
     }
 
-    @BeforeEach
+    @BeforeTest
     fun createObjects() {
         taskboard = Taskboard("Test Taskboard")
 
@@ -60,9 +56,7 @@ class TaskObjectTest {
 
     @Test
     fun dependencyManagementTest() {
-        assertDoesNotThrow {
-            setupDependencies()
-        }
+        setupDependencies()
 
         assertTrue(g0.hasDependency(t3))
         assertTrue(g0.hasDependency(t2))
@@ -70,13 +64,13 @@ class TaskObjectTest {
         assertTrue(t3.hasDependency(t1))
         assertTrue(t2.hasDependency(t1))
 
-        assertDoesNotThrow {
-            g0.removeDependency(t3)
-            t2.removeDependency(t1)
-            t3.removeDependency(t0)
-            g0.removeDependency(t2)
-            t3.removeDependency(t1)
-        }
+
+        g0.removeDependency(t3)
+        t2.removeDependency(t1)
+        t3.removeDependency(t0)
+        g0.removeDependency(t2)
+        t3.removeDependency(t1)
+
 
         assertFalse(g0.hasDependency(t3))
         assertFalse(g0.hasDependency(t2))
@@ -97,19 +91,15 @@ class TaskObjectTest {
             }
         }
         
-        assertThrows<MissingTaskReqsException> { t3.markAsComplete() }
-        assertThrows<MissingTaskReqsException> { t2.markAsComplete() }
+        assertFailsWith<MissingTaskReqsException> { t3.markAsComplete() }
+        assertFailsWith<MissingTaskReqsException> { t2.markAsComplete() }
         
-        assertDoesNotThrow {
-            t0.markAsComplete()
-        }
+        t0.markAsComplete()
         
         assertEquals(TaskStatus.NOT_STARTED, t3.status)
         
-        assertDoesNotThrow { 
-            t1.markAsComplete()
-            t3.markAsComplete()
-        }
+        t1.markAsComplete()
+        t3.markAsComplete()
         
         assertEquals(TaskStatus.COMPLETE, t0.status)
         assertEquals(TaskStatus.COMPLETE, t1.status)
@@ -118,7 +108,7 @@ class TaskObjectTest {
         assertEquals(TaskStatus.IN_PROGRESS, t2.status)
         assertEquals(TaskStatus.IN_PROGRESS, g0.status)
         
-        assertDoesNotThrow { t2.markAsComplete() }
+        t2.markAsComplete()
 
         assertEquals(TaskStatus.COMPLETE, t2.status)
         assertEquals(TaskStatus.COMPLETE, g0.status)
@@ -161,15 +151,15 @@ class TaskObjectTest {
 
     @Test
     fun exceptionTest() {
-        assertThrows<NoSuchDependencyException> { t0.removeDependency(t1) }
+        assertFailsWith<NoSuchDependencyException> { t0.removeDependency(t1) }
 
         t0.addDependency(t1)
-        assertThrows<DependencyAlreadyExistsException> { t0.addDependency(t1) }
+        assertFailsWith<DependencyAlreadyExistsException> { t0.addDependency(t1) }
 
-        assertThrows<CircularDependencyException> { t1.addDependency(t0) }
+        assertFailsWith<CircularDependencyException> { t1.addDependency(t0) }
 
         t1.addDependency(t2)
-        assertThrows<CircularDependencyException> { t2.addDependency(t0) }
+        assertFailsWith<CircularDependencyException> { t2.addDependency(t0) }
     }
 
     @Test

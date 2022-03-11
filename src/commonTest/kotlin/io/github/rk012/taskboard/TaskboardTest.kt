@@ -1,17 +1,15 @@
 package io.github.rk012.taskboard
 
+import io.github.rk012.taskboard.Taskboard.FilterItems
+import io.github.rk012.taskboard.Taskboard.SortOptions
 import io.github.rk012.taskboard.exceptions.NoSuchLabelException
-import io.github.rk012.taskboard.Taskboard.*
 import kotlinx.datetime.LocalDateTime
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.*
 
 class TaskboardTest {
     private lateinit var tb: Taskboard
 
-    @BeforeEach
+    @BeforeTest
     fun createTaskboard() {
         tb = Taskboard("Test Taskboard")
     }
@@ -43,7 +41,7 @@ class TaskboardTest {
             tb.query(sortOptions = listOf(SortOptions.NAME))
         )
 
-        assertDoesNotThrow { tb.query(sortOptions = listOf(SortOptions.NAME, SortOptions.DEPENDENTS)) }
+        tb.query(sortOptions = listOf(SortOptions.NAME, SortOptions.DEPENDENTS))
     }
 
     @Test
@@ -122,8 +120,8 @@ class TaskboardTest {
             )
         )
 
-        assertThrows<NoSuchLabelException> { tb.query(includeLabels = listOf("Nonexistent")) }
-        assertThrows<NoSuchLabelException> { tb.query(excludeLabels = listOf("Nonexistent")) }
+        assertFailsWith<NoSuchLabelException> { tb.query(includeLabels = listOf("Nonexistent")) }
+        assertFailsWith<NoSuchLabelException> { tb.query(excludeLabels = listOf("Nonexistent")) }
 
         assertFalse(tb.removeLabel(t1, "Nonexistent"))
         assertTrue(tb.removeLabel(t1, "Label 2"))
@@ -286,6 +284,6 @@ class TaskboardTest {
             Taskboard.fromJson(json).toJson()
         )
 
-        assertTrue(Taskboard.fromJson(json)[t1.id]!!.status == TaskStatus.COMPLETE)
+        assertEquals(TaskStatus.COMPLETE, Taskboard.fromJson(json)[t1.id]!!.status)
     }
 }

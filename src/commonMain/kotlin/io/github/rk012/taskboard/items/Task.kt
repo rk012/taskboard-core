@@ -30,7 +30,7 @@ class Task internal constructor(name: String, id: String, time: LocalDateTime) :
     }
 
     override fun updateSelf() {
-        dependencies.forEach {
+        dependencyList.forEach {
             if (it.status != TaskStatus.COMPLETE) {
                 status = TaskStatus.NOT_STARTED
                 isComplete = false
@@ -58,7 +58,7 @@ class Task internal constructor(name: String, id: String, time: LocalDateTime) :
         time.toString(),
         labels,
         isComplete,
-        dependencies.map { it.id }
+        dependencyList.map { it.id }
     )
 
     internal fun loadDependencies(tb: Taskboard) {

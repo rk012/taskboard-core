@@ -25,12 +25,12 @@ class Goal internal constructor(name: String, id: String, time: LocalDateTime) :
     }
 
     override fun updateSelf() {
-        if (dependencies.all { it.status == TaskStatus.NOT_STARTED }) {
+        if (dependencyList.all { it.status == TaskStatus.NOT_STARTED }) {
             status = TaskStatus.NOT_STARTED
             return
         }
 
-        dependencies.forEach {
+        dependencyList.forEach {
             if (it.status != TaskStatus.COMPLETE) {
                 status = TaskStatus.IN_PROGRESS
                 return
@@ -46,7 +46,7 @@ class Goal internal constructor(name: String, id: String, time: LocalDateTime) :
         time.toString(),
         labels,
         status == TaskStatus.COMPLETE,
-        dependencies.map { it.id }
+        dependencyList.map { it.id }
     )
 
     internal fun loadDependencies(tb: Taskboard) {

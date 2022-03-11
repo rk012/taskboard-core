@@ -9,7 +9,7 @@ sealed class TaskObject(var name: String, val id: String, var time: LocalDateTim
         protected set
 
     internal val labels = mutableListOf<String>()
-    protected val dependencies = mutableListOf<TaskObject>() // Other TaskObjects this depends on
+    protected val dependencyList = mutableListOf<TaskObject>() // Other TaskObjects this depends on
     private val dependents = mutableListOf<TaskObject>() // Other TaskObjects that depend on this
 
     init {
@@ -18,24 +18,23 @@ sealed class TaskObject(var name: String, val id: String, var time: LocalDateTim
 
     fun getLabels() = labels.toList()
 
-    @JvmName("dependencies")
-    fun getDependencies() = dependencies.toList()
+    fun getDependencies() = dependencyList.toList()
 
     fun getDependents() = dependents.toList()
 
     fun addDependency(other: TaskObject) {
-        if (dependencies.contains(other)) throw DependencyAlreadyExistsException()
+        if (dependencyList.contains(other)) throw DependencyAlreadyExistsException()
         if (other.hasDependency(this)) throw CircularDependencyException()
 
-        dependencies.add(other)
+        dependencyList.add(other)
         other.dependents.add(this)
         update()
     }
 
     fun hasDependency(other: TaskObject): Boolean {
-        if (dependencies.contains(other)) return true
+        if (dependencyList.contains(other)) return true
 
-        dependencies.forEach {
+        dependencyList.forEach {
             if (it.hasDependency(other)) return true
         }
 
@@ -43,7 +42,7 @@ sealed class TaskObject(var name: String, val id: String, var time: LocalDateTim
     }
 
     fun removeDependency(other: TaskObject) {
-        if (!dependencies.remove(other)) throw NoSuchDependencyException()
+        if (!dependencyList.remove(other)) throw NoSuchDependencyException()
 
         other.dependents.remove(this)
         update()
@@ -61,7 +60,7 @@ sealed class TaskObject(var name: String, val id: String, var time: LocalDateTim
 
     internal fun delink() {
         // List needs to be copied since the removeDependency/removeDependent function modifies the original list
-        dependencies.toList().forEach {
+        dependencyList.toList().forEach {
             removeDependency(it)
         }
 
