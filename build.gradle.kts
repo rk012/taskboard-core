@@ -1,10 +1,11 @@
 plugins {
     kotlin("multiplatform") version "1.5.10"
     kotlin("plugin.serialization") version "1.6.10"
+    `maven-publish`
 }
 
 group = "io.github.rk012"
-version = "1.2"
+version = "1.2.1"
 
 repositories {
     mavenCentral()
